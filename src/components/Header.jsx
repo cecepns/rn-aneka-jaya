@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, ShoppingCart } from 'lucide-react';
 import Logo from '../assets/logo.webp'
+import { useCart } from '../hooks/useCart';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
+  const { getTotalItems } = useCart();
 
   const isActive = (path) => {
     return location.pathname === path ? 'text-primary-600' : 'text-gray-600 hover:text-primary-600';
@@ -42,17 +44,31 @@ const Header = () => {
             </div>
           </div>
 
-          <div className="md:hidden">
-            <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="text-gray-500 hover:text-gray-600 focus:outline-none focus:text-gray-600"
+          <div className="flex items-center space-x-4">
+            <Link
+              to="/cart"
+              className="relative p-2 text-gray-600 hover:text-primary-600 transition-colors duration-200"
             >
-              {isMenuOpen ? (
-                <X className="h-6 w-6" />
-              ) : (
-                <Menu className="h-6 w-6" />
+              <ShoppingCart className="h-6 w-6" />
+              {getTotalItems() > 0 && (
+                <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">
+                  {getTotalItems()}
+                </span>
               )}
-            </button>
+            </Link>
+
+            <div className="md:hidden">
+              <button
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                className="text-gray-500 hover:text-gray-600 focus:outline-none focus:text-gray-600"
+              >
+                {isMenuOpen ? (
+                  <X className="h-6 w-6" />
+                ) : (
+                  <Menu className="h-6 w-6" />
+                )}
+              </button>
+            </div>
           </div>
         </div>
 

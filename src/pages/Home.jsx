@@ -4,13 +4,16 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 import { apiEndpoints } from "../utils/api";
 import { useSettings } from "../hooks/useSettings";
+import { useCart } from "../hooks/useCart";
 import Banner from "../assets/banner.png";
-import { ShoppingBag, Package, Clock, Truck, MapPin, Phone } from 'lucide-react';
+import { ShoppingBag, Package, Clock, Truck, MapPin, Phone, ShoppingCart, Check } from 'lucide-react';
 
 const Home = () => {
   const { settings } = useSettings();
+  const { addToCart } = useCart();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [addedToCartIds, setAddedToCartIds] = useState(new Set());
 
   useEffect(() => {
     // Scroll to top when component mounts
@@ -35,6 +38,18 @@ const Home = () => {
       style: "currency",
       currency: "IDR",
     }).format(price);
+  };
+
+  const handleAddToCart = (product) => {
+    addToCart(product, null);
+    setAddedToCartIds(prev => new Set(prev).add(product.id));
+    setTimeout(() => {
+      setAddedToCartIds(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(product.id);
+        return newSet;
+      });
+    }, 2000);
   };
 
   const features = [
@@ -199,16 +214,40 @@ const Home = () => {
                       }}
                     ></p>
 
-                    <div className="flex items-center justify-between">
-                      <span className="text-xl font-bold text-primary-600">
-                        {formatPrice(product.price)}
-                      </span>
-                      <Link
-                        to={`/products/${product.id}`}
-                        className="btn-primary text-sm px-4 py-2"
-                      >
-                        Detail
-                      </Link>
+                    <div className="space-y-3">
+                      <div>
+                        <span className="text-xl font-bold text-primary-600">
+                          {formatPrice(product.price)}
+                        </span>
+                      </div>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleAddToCart(product)}
+                          className={`flex-1 text-sm px-4 py-2 rounded-lg transition-all duration-200 font-medium flex items-center justify-center space-x-1 ${
+                            addedToCartIds.has(product.id)
+                              ? 'btn-success'
+                              : 'btn-secondary'
+                          }`}
+                        >
+                          {addedToCartIds.has(product.id) ? (
+                            <>
+                              <Check className="w-4 h-4" />
+                              <span>Ditambah</span>
+                            </>
+                          ) : (
+                            <>
+                              <ShoppingCart className="w-4 h-4" />
+                              <span>Keranjang</span>
+                            </>
+                          )}
+                        </button>
+                        <Link
+                          to={`/products/${product.id}`}
+                          className="btn-primary text-sm px-4 py-2"
+                        >
+                          Detail
+                        </Link>
+                      </div>
                     </div>
                   </div>
                 </div>

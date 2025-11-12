@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { apiEndpoints } from '../utils/api';
 import Pagination from '../components/Pagination';
+import { useCart } from '../hooks/useCart';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
-import { Search, PackageX } from 'lucide-react';
+import { Search, PackageX, ShoppingCart, Check } from 'lucide-react';
 
 const Products = () => {
   const [products, setProducts] = useState([]);
@@ -12,6 +13,8 @@ const Products = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
+  const { addToCart } = useCart();
+  const [addedToCartIds, setAddedToCartIds] = useState(new Set());
 
   useEffect(() => {
     // Initialize AOS with a delay to ensure DOM is ready
@@ -34,7 +37,19 @@ const Products = () => {
   }, []);
 
   useEffect(() => {
-    fetchProducts();
+    const fetch = async () => {
+      try {
+        setLoading(true);
+        const response = await apiEndpoints.getProducts(currentPage, 10);
+        setProducts(response.data.products);
+        setTotalPages(Math.ceil(response.data.total / 10));
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetch();
   }, [currentPage]);
 
   // Refresh AOS when products are loaded
@@ -46,18 +61,6 @@ const Products = () => {
     }
   }, [products, loading]);
 
-  const fetchProducts = async () => {
-    try {
-      setLoading(true);
-      const response = await apiEndpoints.getProducts(currentPage, 10);
-      setProducts(response.data.products);
-      setTotalPages(Math.ceil(response.data.total / 10));
-    } catch (error) {
-      console.error('Error fetching products:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const filteredProducts = products.filter(product =>
     product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -69,6 +72,18 @@ const Products = () => {
       style: 'currency',
       currency: 'IDR'
     }).format(price);
+  };
+
+  const handleAddToCart = (product) => {
+    addToCart(product, null);
+    setAddedToCartIds(prev => new Set(prev).add(product.id));
+    setTimeout(() => {
+      setAddedToCartIds(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(product.id);
+        return newSet;
+      });
+    }, 2000);
   };
 
   return (
@@ -138,16 +153,40 @@ const Products = () => {
                       </h3>
                       <p className="text-gray-600 text-sm mb-3 line-clamp-4" dangerouslySetInnerHTML={{ __html: product.description?.substring(0, 50) + '...' }}></p>
                       
-                      <div className="flex items-center justify-between">
-                        <span className="text-xl font-bold text-primary-600">
-                          {formatPrice(product.price)}
-                        </span>
-                        <Link 
-                          to={`/products/${product.id}`}
-                          className="btn-primary text-sm px-4 py-2"
-                        >
-                          Detail
-                        </Link>
+                      <div className="space-y-3">
+                        <div>
+                          <span className="text-xl font-bold text-primary-600">
+                            {formatPrice(product.price)}
+                          </span>
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleAddToCart(product)}
+                            className={`flex-1 text-sm px-4 py-2 rounded-lg transition-all duration-200 font-medium flex items-center justify-center space-x-1 ${
+                              addedToCartIds.has(product.id)
+                                ? 'btn-success'
+                                : 'btn-secondary'
+                            }`}
+                          >
+                            {addedToCartIds.has(product.id) ? (
+                              <>
+                                <Check className="w-4 h-4" />
+                                <span>Ditambah</span>
+                              </>
+                            ) : (
+                              <>
+                                <ShoppingCart className="w-4 h-4" />
+                                <span>Keranjang</span>
+                              </>
+                            )}
+                          </button>
+                          <Link 
+                            to={`/products/${product.id}`}
+                            className="btn-primary text-sm px-4 py-2"
+                          >
+                            Detail
+                          </Link>
+                        </div>
                       </div>
                     </div>
                   </div>

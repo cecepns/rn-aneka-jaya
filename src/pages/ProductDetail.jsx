@@ -2,16 +2,19 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { apiEndpoints } from '../utils/api';
 import { useSettings } from '../hooks/useSettings';
+import { useCart } from '../hooks/useCart';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
-import { PackageX, MessageCircle, Phone, Info } from 'lucide-react';
+import { PackageX, MessageCircle, Phone, Info, ShoppingCart, Check } from 'lucide-react';
 
 const ProductDetail = () => {
   const { id } = useParams();
   const { settings } = useSettings();
+  const { addToCart } = useCart();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedVariant, setSelectedVariant] = useState(null);
+  const [addedToCart, setAddedToCart] = useState(false);
 
   useEffect(() => {
     // Initialize AOS with a delay to ensure DOM is ready
@@ -42,14 +45,20 @@ const ProductDetail = () => {
       setLoading(true);
       const response = await apiEndpoints.getProduct(id);
       setProduct(response.data);
-      // Set first variant as selected if variants exist
-      if (response.data.variants && response.data.variants.length > 0) {
-        setSelectedVariant(response.data.variants[0]);
-      }
+      // Set default to main product (not variant) - variant utama
+      setSelectedVariant(null);
     } catch (error) {
       console.error('Error fetching product:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleAddToCart = () => {
+    if (product) {
+      addToCart(product, selectedVariant);
+      setAddedToCart(true);
+      setTimeout(() => setAddedToCart(false), 2000);
     }
   };
 
@@ -257,13 +266,27 @@ const ProductDetail = () => {
                       <MessageCircle className="w-5 h-5" />
                       <span>Pesan via WhatsApp</span>
                     </a>
-                    <a 
-                      href={`tel:${settings.phone}`}
-                      className="btn-secondary flex-1 text-center py-3 text-lg font-semibold flex items-center justify-center space-x-2"
+                    <button
+                      onClick={handleAddToCart}
+                      disabled={(selectedVariant?.stock || product.stock) === 0}
+                      className={`flex-1 text-center py-3 text-lg font-semibold flex items-center justify-center space-x-2 rounded-lg transition-all duration-200 ${
+                        addedToCart
+                          ? 'btn-success'
+                          : 'btn-secondary'
+                      } disabled:opacity-50 disabled:cursor-not-allowed`}
                     >
-                      <Phone className="w-5 h-5" />
-                      <span>Hubungi Kami</span>
-                    </a>
+                      {addedToCart ? (
+                        <>
+                          <Check className="w-5 h-5" />
+                          <span>Ditambahkan ke Keranjang</span>
+                        </>
+                      ) : (
+                        <>
+                          <ShoppingCart className="w-5 h-5" />
+                          <span>Tambah ke Keranjang</span>
+                        </>
+                      )}
+                    </button>
                   </div>
                   
                   <div className="flex items-center justify-center space-x-2 text-sm text-gray-500">
