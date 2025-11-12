@@ -14,6 +14,8 @@ const ProductManagement = () => {
   const [showVariantModal, setShowVariantModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [editingVariant, setEditingVariant] = useState(null);
+  const [submittingProduct, setSubmittingProduct] = useState(false);
+  const [submittingVariant, setSubmittingVariant] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -183,6 +185,7 @@ const ProductManagement = () => {
   const handleVariantSubmit = async (e) => {
     e.preventDefault();
     try {
+      setSubmittingVariant(true);
       const submitData = new FormData();
       Object.keys(variantFormData).forEach(key => {
         if (variantFormData[key] !== null) {
@@ -203,6 +206,8 @@ const ProductManagement = () => {
     } catch (error) {
       console.error('Error saving variant:', error);
       alert('Terjadi kesalahan saat menyimpan varian');
+    } finally {
+      setSubmittingVariant(false);
     }
   };
 
@@ -222,6 +227,7 @@ const ProductManagement = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      setSubmittingProduct(true);
       const submitData = new FormData();
       Object.keys(formData).forEach(key => {
         if (formData[key] !== null) {
@@ -241,6 +247,8 @@ const ProductManagement = () => {
     } catch (error) {
       console.error('Error saving product:', error);
       alert('Terjadi kesalahan saat menyimpan produk');
+    } finally {
+      setSubmittingProduct(false);
     }
   };
 
@@ -552,14 +560,19 @@ const ProductManagement = () => {
                     <button
                       type="button"
                       onClick={closeVariantModal}
-                      className="btn-secondary px-6 py-2"
+                      disabled={submittingVariant}
+                      className="btn-secondary px-6 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       Batal
                     </button>
                     <button
                       type="submit"
-                      className="btn-primary px-6 py-2"
+                      disabled={submittingVariant}
+                      className="btn-primary px-6 py-2 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2"
                     >
+                      {submittingVariant && (
+                        <span className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                      )}
                       {editingVariant ? 'Update Varian' : 'Simpan Varian'}
                     </button>
                   </div>
@@ -690,14 +703,19 @@ const ProductManagement = () => {
                   <button
                     type="button"
                     onClick={closeModal}
-                    className="btn-secondary px-6 py-2"
+                    disabled={submittingProduct}
+                    className="btn-secondary px-6 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Batal
                   </button>
                   <button
                     type="submit"
-                    className="btn-primary px-6 py-2"
+                    disabled={submittingProduct}
+                    className="btn-primary px-6 py-2 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2"
                   >
+                    {submittingProduct && (
+                      <span className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                    )}
                     {editingProduct ? 'Update' : 'Simpan'}
                   </button>
                 </div>
