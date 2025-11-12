@@ -44,7 +44,7 @@ const Header = () => {
             </div>
           </div>
 
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-4 mr-4">
             <Link
               to="/cart"
               className="relative p-2 text-gray-600 hover:text-primary-600 transition-colors duration-200"
