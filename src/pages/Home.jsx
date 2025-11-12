@@ -77,7 +77,8 @@ const Home = () => {
             <div data-aos="fade-right" className="flex-1">
               <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 mb-6">
                 Selamat Datang di
-                <span className="text-primary-600 block">Gudang Pakan RN Aneka Jaya</span>
+                <span className="text-primary-600 block">Gudang Pakan</span>
+                <span className="text-primary-600 block">RN Aneka Jaya</span>
               </h1>
               <p className="text-xl text-gray-600 mb-8 leading-relaxed">
                 Supplier pakan ternak dan ikan berkualitas terpercaya yang menyediakan berbagai
