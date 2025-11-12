@@ -4,12 +4,13 @@ import { useCart } from '../hooks/useCart';
 import { useSettings } from '../hooks/useSettings';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
-import { ShoppingCart, Trash2, Minus, Plus, MessageCircle, Phone, Info } from 'lucide-react';
+import { ShoppingCart, Trash2, Minus, Plus, MessageCircle, Phone, Info, AlertCircle } from 'lucide-react';
 
 const Cart = () => {
   const { cart, removeFromCart, updateCartItemQuantity, getTotalPrice, getTotalItems, clearCart } = useCart();
   const { settings } = useSettings();
   const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -54,6 +55,11 @@ const Cart = () => {
       clearCart();
       setIsCheckingOut(false);
     }, 500);
+  };
+
+  const handleClearCart = () => {
+    clearCart();
+    setShowClearConfirm(false);
   };
 
   if (cart.length === 0) {
@@ -119,7 +125,7 @@ const Cart = () => {
                     </div>
 
                     {/* Product Info */}
-                    <div className="flex-1 flex flex-col justify-between">
+                    <div className="flex-1 flex flex-col justify-between border-r pr-2">
                       <div>
                         <h3 className="text-lg font-semibold text-gray-900 mb-1">
                           {item.name}
@@ -233,6 +239,13 @@ const Cart = () => {
                     <Phone className="w-5 h-5" />
                     <span>Hubungi Kami</span>
                   </a>
+                  <button
+                    onClick={() => setShowClearConfirm(true)}
+                    className="w-full py-3 text-lg font-semibold flex items-center justify-center space-x-2 border-2 border-red-500 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                  >
+                    <Trash2 className="w-5 h-5" />
+                    <span>Hapus Semua</span>
+                  </button>
                 </div>
 
                 <div className="flex items-start justify-center space-x-2 text-sm text-gray-500 mt-4">
@@ -244,6 +257,37 @@ const Cart = () => {
           </div>
         </div>
       </section>
+
+      {/* Clear Cart Confirmation Modal */}
+      {showClearConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6 data-aos='zoom-in'" data-aos="zoom-in">
+            <div className="flex items-center justify-center w-12 h-12 mx-auto bg-red-100 rounded-full mb-4">
+              <AlertCircle className="w-6 h-6 text-red-600" />
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900 text-center mb-2">
+              Hapus Semua Item?
+            </h3>
+            <p className="text-gray-600 text-center mb-6">
+              Anda yakin ingin menghapus semua item dari keranjang? Tindakan ini tidak dapat dibatalkan.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowClearConfirm(false)}
+                className="flex-1 px-4 py-2 border-2 border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                Batal
+              </button>
+              <button
+                onClick={handleClearCart}
+                className="flex-1 px-4 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-colors"
+              >
+                Hapus Semua
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
