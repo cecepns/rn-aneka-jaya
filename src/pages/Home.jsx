@@ -71,7 +71,7 @@ const Home = () => {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-primary-50 to-primary-100 py-10 md:py-20">
+      <section className="bg-gradient-to-br from-primary-50 to-primary-100 py-20 mt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col-reverse lg:flex-row gap-12 items-center">
             <div data-aos="fade-right" className="flex-1">

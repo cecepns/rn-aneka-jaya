@@ -74,7 +74,7 @@ const Products = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-primary-50 to-primary-100 py-16">
+      <section className="bg-gradient-to-br from-primary-50 to-primary-100 py-20 mt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6" data-aos="fade-up">
