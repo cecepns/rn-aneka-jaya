@@ -289,7 +289,7 @@ const Cart = () => {
       {/* Clear Cart Confirmation Modal */}
       {showClearConfirm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6 data-aos='zoom-in'" data-aos="zoom-in">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6" data-aos="zoom-in">
             <div className="flex items-center justify-center w-12 h-12 mx-auto bg-red-100 rounded-full mb-4">
               <AlertCircle className="w-6 h-6 text-red-600" />
             </div>
