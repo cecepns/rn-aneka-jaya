@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { apiEndpoints } from '../../utils/api';
-import { MapPin, Phone, Map, Clock } from 'lucide-react';
+import { MapPin, Phone, Map, Clock, Instagram, Facebook } from 'lucide-react';
+import TikTokIcon from '../../components/TikTokIcon';
 
 const Settings = () => {
   const [settings, setSettings] = useState({
@@ -9,7 +10,10 @@ const Settings = () => {
     phone: '',
     maps_url: '',
     operating_hours: '',
-    about_us: ''
+    about_us: '',
+    instagram_url: '',
+    tiktok_url: '',
+    facebook_url: ''
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -30,7 +34,10 @@ const Settings = () => {
         phone: '085243008899',
         maps_url: 'https://maps.app.goo.gl/nwkqSVyAXtdTC37HA',
         operating_hours: 'Setiap Hari: 07.00 - 21.00 WIT',
-        about_us: 'Gudang Pakan RN Aneka Jaya adalah toko sembako terpercaya yang menyediakan berbagai macam kebutuhan sehari-hari berkualitas dengan harga terjangkau untuk keluarga Indonesia.'
+        about_us: 'Gudang Pakan RN Aneka Jaya adalah toko sembako terpercaya yang menyediakan berbagai macam kebutuhan sehari-hari berkualitas dengan harga terjangkau untuk keluarga Indonesia.',
+        instagram_url: '',
+        tiktok_url: '',
+        facebook_url: ''
       });
     } finally {
       setLoading(false);
@@ -182,6 +189,56 @@ const Settings = () => {
               </p>
             </div>
 
+            {/* Social Media Section */}
+            <div className="border-t pt-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Media Sosial</h3>
+              
+              <div>
+                <label htmlFor="instagram_url" className="block text-sm font-medium text-gray-700 mb-2">
+                  Instagram
+                </label>
+                <input
+                  type="url"
+                  id="instagram_url"
+                  name="instagram_url"
+                  className="input-field"
+                  value={settings.instagram_url}
+                  onChange={handleChange}
+                  placeholder="https://instagram.com/username"
+                />
+              </div>
+
+              <div className="mt-4">
+                <label htmlFor="tiktok_url" className="block text-sm font-medium text-gray-700 mb-2">
+                  TikTok
+                </label>
+                <input
+                  type="url"
+                  id="tiktok_url"
+                  name="tiktok_url"
+                  className="input-field"
+                  value={settings.tiktok_url}
+                  onChange={handleChange}
+                  placeholder="https://tiktok.com/@username"
+                />
+              </div>
+
+              <div className="mt-4">
+                <label htmlFor="facebook_url" className="block text-sm font-medium text-gray-700 mb-2">
+                  Facebook
+                </label>
+                <input
+                  type="url"
+                  id="facebook_url"
+                  name="facebook_url"
+                  className="input-field"
+                  value={settings.facebook_url}
+                  onChange={handleChange}
+                  placeholder="https://facebook.com/username"
+                />
+              </div>
+            </div>
+
             <div className="border-t pt-6">
               <div className="flex justify-end space-x-4">
                 <Link
@@ -240,6 +297,51 @@ const Settings = () => {
                   <div>
                     <h4 className="font-semibold text-gray-900">Jam Operasional</h4>
                     <p className="text-gray-600">{settings.operating_hours || 'Belum diatur'}</p>
+                  </div>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <Instagram className="w-5 h-5 text-primary-600 mt-1" />
+                  <div>
+                    <h4 className="font-semibold text-gray-900">Instagram</h4>
+                    <p className="text-gray-600">
+                      {settings.instagram_url ? (
+                        <a href={settings.instagram_url} target="_blank" rel="noopener noreferrer" className="text-primary-600 hover:text-primary-700">
+                          Kunjungi Instagram
+                        </a>
+                      ) : (
+                        'Belum diatur'
+                      )}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <TikTokIcon size={20} className="w-5 h-5 text-primary-600 mt-1" />
+                  <div>
+                    <h4 className="font-semibold text-gray-900">TikTok</h4>
+                    <p className="text-gray-600">
+                      {settings.tiktok_url ? (
+                        <a href={settings.tiktok_url} target="_blank" rel="noopener noreferrer" className="text-primary-600 hover:text-primary-700">
+                          Kunjungi TikTok
+                        </a>
+                      ) : (
+                        'Belum diatur'
+                      )}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <Facebook className="w-5 h-5 text-primary-600 mt-1" />
+                  <div>
+                    <h4 className="font-semibold text-gray-900">Facebook</h4>
+                    <p className="text-gray-600">
+                      {settings.facebook_url ? (
+                        <a href={settings.facebook_url} target="_blank" rel="noopener noreferrer" className="text-primary-600 hover:text-primary-700">
+                          Kunjungi Facebook
+                        </a>
+                      ) : (
+                        'Belum diatur'
+                      )}
+                    </p>
                   </div>
                 </div>
               </div>

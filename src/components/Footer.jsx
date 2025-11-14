@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 import { useSettings } from "../hooks/useSettings";
+import { Instagram, Facebook } from "lucide-react";
+import TikTokIcon from "./TikTokIcon";
 
 const Footer = () => {
   const { settings } = useSettings();
@@ -54,6 +56,14 @@ const Footer = () => {
               </li>
               <li>
                 <Link
+                  to="/news"
+                  className="text-gray-300 hover:text-white transition-colors"
+                >
+                  Info & wawasan
+                </Link>
+              </li>
+              <li>
+                <Link
                   to="/contact"
                   className="text-gray-300 hover:text-white transition-colors"
                 >
@@ -77,6 +87,47 @@ const Footer = () => {
                   {settings.phone}
                 </a>
               </p>
+            </div>
+          </div>
+
+          <div>
+            <h3 className="text-sm font-semibold uppercase tracking-wider mb-4">
+              Media Sosial
+            </h3>
+            <div className="flex space-x-4">
+              {settings.instagram_url && (
+                <a
+                  href={settings.instagram_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-300 hover:text-white transition-colors"
+                  title="Instagram"
+                >
+                  <Instagram className="w-6 h-6" />
+                </a>
+              )}
+              {settings.tiktok_url && (
+                <a
+                  href={settings.tiktok_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-300 hover:text-white transition-colors"
+                  title="TikTok"
+                >
+                  <TikTokIcon size={24} className="w-6 h-6" />
+                </a>
+              )}
+              {settings.facebook_url && (
+                <a
+                  href={settings.facebook_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-300 hover:text-white transition-colors"
+                  title="Facebook"
+                >
+                  <Facebook className="w-6 h-6" />
+                </a>
+              )}
             </div>
           </div>
         </div>

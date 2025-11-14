@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { apiEndpoints } from '../../utils/api';
-import { Package, AlertTriangle, Settings, Eye, Tag } from 'lucide-react';
+import { Package, AlertTriangle, Settings, Eye, Tag, Newspaper, CreditCard } from 'lucide-react';
 
 const Dashboard = () => {
   const [stats, setStats] = useState({
@@ -108,7 +108,7 @@ const Dashboard = () => {
         {/* Quick Actions */}
         <div className="card p-6">
           <h3 className="text-xl font-semibold text-gray-900 mb-6">Menu Utama</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <Link
               to="/admin/products"
               className="p-4 border border-gray-200 rounded-lg hover:border-primary-300 hover:shadow-md transition-all duration-200 text-center"
@@ -127,8 +127,41 @@ const Dashboard = () => {
               <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center mx-auto mb-3">
                 <Tag className="w-6 h-6 text-primary-600" />
               </div>
-              <h4 className="font-semibold text-gray-900">Kelola Kategori</h4>
+              <h4 className="font-semibold text-gray-900">Kategori Produk</h4>
               <p className="text-sm text-gray-600">Tambah, edit, hapus kategori</p>
+            </Link>
+
+            <Link
+              to="/admin/news"
+              className="p-4 border border-gray-200 rounded-lg hover:border-primary-300 hover:shadow-md transition-all duration-200 text-center"
+            >
+              <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                <Newspaper className="w-6 h-6 text-primary-600" />
+              </div>
+              <h4 className="font-semibold text-gray-900">Kelola Berita</h4>
+              <p className="text-sm text-gray-600">Tambah, edit, hapus berita</p>
+            </Link>
+
+            <Link
+              to="/admin/news-categories"
+              className="p-4 border border-gray-200 rounded-lg hover:border-primary-300 hover:shadow-md transition-all duration-200 text-center"
+            >
+              <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                <Tag className="w-6 h-6 text-primary-600" />
+              </div>
+              <h4 className="font-semibold text-gray-900">Kategori Berita</h4>
+              <p className="text-sm text-gray-600">Kelola kategori berita</p>
+            </Link>
+
+            <Link
+              to="/admin/payment-methods"
+              className="p-4 border border-gray-200 rounded-lg hover:border-primary-300 hover:shadow-md transition-all duration-200 text-center"
+            >
+              <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                <CreditCard className="w-6 h-6 text-primary-600" />
+              </div>
+              <h4 className="font-semibold text-gray-900">Metode Pembayaran</h4>
+              <p className="text-sm text-gray-600">Kelola QRIS & rekening</p>
             </Link>
 
             <Link
@@ -154,16 +187,6 @@ const Dashboard = () => {
               <h4 className="font-semibold text-gray-900">Lihat Website</h4>
               <p className="text-sm text-gray-600">Buka website publik</p>
             </a>
-
-            {/* <div className="p-4 border border-gray-200 rounded-lg text-center opacity-50">
-              <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-                <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-              </div>
-              <h4 className="font-semibold text-gray-400">Laporan</h4>
-              <p className="text-sm text-gray-400">Segera hadir</p>
-            </div> */}
           </div>
         </div>
       </div>

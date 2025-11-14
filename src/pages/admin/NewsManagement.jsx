@@ -33,7 +33,7 @@ const NewsManagement = () => {
   const fetchNews = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${API_URL}/news?status=draft&page=${currentPage}`, {
+      const response = await axios.get(`${API_URL}/news?page=${currentPage}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setNews(response.data.news || []);

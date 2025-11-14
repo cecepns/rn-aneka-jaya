@@ -22,6 +22,7 @@ const PaymentMethodManagement = () => {
   const [submitLoading, setSubmitLoading] = useState(false);
 
   const API_URL = 'https://api-inventory.isavralabel.com/rn-aneka-jaya/api';
+  const BASE_URL = 'https://api-inventory.isavralabel.com/rn-aneka-jaya';
   const token = localStorage.getItem('token');
 
   const handleLogout = () => {
@@ -92,7 +93,7 @@ const PaymentMethodManagement = () => {
       display_order: method.display_order
     });
     if (method.qris_image) {
-      setImagePreview(`${API_URL}/uploads/${method.qris_image}`);
+      setImagePreview(`${BASE_URL}/uploads/${method.qris_image}`);
     }
     setShowForm(true);
   };
@@ -262,7 +263,7 @@ const PaymentMethodManagement = () => {
                 {method.type === 'qris' ? (
                   method.qris_image && (
                     <img
-                      src={`${API_URL}/uploads/${method.qris_image}`}
+                      src={`${BASE_URL}/uploads/${method.qris_image}`}
                       alt="QRIS"
                       className="w-full h-40 object-cover rounded-lg mb-4"
                     />

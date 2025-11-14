@@ -17,6 +17,7 @@ const Header = () => {
     { name: 'Beranda', href: '/' },
     { name: 'Tentang', href: '/about' },
     { name: 'Produk', href: '/products' },
+    { name: 'Info & wawasan', href: '/news' },
     { name: 'Kontak', href: '/contact' },
   ];
 

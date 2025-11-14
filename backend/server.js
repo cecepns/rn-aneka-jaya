@@ -289,7 +289,10 @@ app.get('/api/settings', (req, res) => {
         phone: '085243008899',
         maps_url: 'https://maps.app.goo.gl/nwkqSVyAXtdTC37HA',
         operating_hours: 'Setiap Hari: 07.00 - 21.00 WIT',
-        about_us: 'Gudang Pakan RN Aneka Jaya adalah supplier pakan ternak dan ikan berkualitas terpercaya yang menyediakan berbagai macam pakan unggas, ikan, suplemen, dan perlengkapan peternakan dengan harga kompetitif.'
+        about_us: 'Gudang Pakan RN Aneka Jaya adalah supplier pakan ternak dan ikan berkualitas terpercaya yang menyediakan berbagai macam pakan unggas, ikan, suplemen, dan perlengkapan peternakan dengan harga kompetitif.',
+        instagram_url: '',
+        tiktok_url: '',
+        facebook_url: ''
       });
     }
 
@@ -298,7 +301,7 @@ app.get('/api/settings', (req, res) => {
 });
 
 app.put('/api/settings', verifyToken, (req, res) => {
-  const { address, phone, maps_url, operating_hours, about_us } = req.body;
+  const { address, phone, maps_url, operating_hours, about_us, instagram_url, tiktok_url, facebook_url } = req.body;
 
   // Check if settings exist
   const checkQuery = 'SELECT id FROM settings ORDER BY id DESC LIMIT 1';
@@ -309,8 +312,8 @@ app.put('/api/settings', verifyToken, (req, res) => {
 
     if (results.length === 0) {
       // Insert new settings
-      const insertQuery = 'INSERT INTO settings (address, phone, maps_url, operating_hours, about_us) VALUES (?, ?, ?, ?, ?)';
-      db.query(insertQuery, [address, phone, maps_url, operating_hours, about_us], (err, result) => {
+      const insertQuery = 'INSERT INTO settings (address, phone, maps_url, operating_hours, about_us, instagram_url, tiktok_url, facebook_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+      db.query(insertQuery, [address, phone, maps_url, operating_hours, about_us, instagram_url, tiktok_url, facebook_url], (err, result) => {
         if (err) {
           return res.status(500).json({ message: 'Error creating settings' });
         }
@@ -318,8 +321,8 @@ app.put('/api/settings', verifyToken, (req, res) => {
       });
     } else {
       // Update existing settings
-      const updateQuery = 'UPDATE settings SET address = ?, phone = ?, maps_url = ?, operating_hours = ?, about_us = ? WHERE id = ?';
-      db.query(updateQuery, [address, phone, maps_url, operating_hours, about_us, results[0].id], (err, result) => {
+      const updateQuery = 'UPDATE settings SET address = ?, phone = ?, maps_url = ?, operating_hours = ?, about_us = ?, instagram_url = ?, tiktok_url = ?, facebook_url = ? WHERE id = ?';
+      db.query(updateQuery, [address, phone, maps_url, operating_hours, about_us, instagram_url, tiktok_url, facebook_url, results[0].id], (err, result) => {
         if (err) {
           return res.status(500).json({ message: 'Error updating settings' });
         }
@@ -506,6 +509,445 @@ app.delete('/api/variants/:id', verifyToken, (req, res) => {
       }
 
       res.json({ message: 'Variant deleted successfully' });
+    });
+  });
+});
+
+// News Categories Routes
+app.get('/api/news-categories', (req, res) => {
+  const query = 'SELECT * FROM news_categories ORDER BY name ASC';
+  db.query(query, (err, results) => {
+    if (err) {
+      return res.status(500).json({ message: 'Error fetching news categories' });
+    }
+    res.json(results);
+  });
+});
+
+app.post('/api/news-categories', verifyToken, (req, res) => {
+  const { name, description } = req.body;
+  
+  const query = 'INSERT INTO news_categories (name, description) VALUES (?, ?)';
+  db.query(query, [name, description || ''], (err, result) => {
+    if (err) {
+      return res.status(500).json({ message: 'Error creating news category' });
+    }
+    
+    res.status(201).json({
+      id: result.insertId,
+      message: 'News category created successfully'
+    });
+  });
+});
+
+app.put('/api/news-categories/:id', verifyToken, (req, res) => {
+  const { id } = req.params;
+  const { name, description } = req.body;
+  
+  const query = 'UPDATE news_categories SET name = ?, description = ? WHERE id = ?';
+  db.query(query, [name, description || '', id], (err, result) => {
+    if (err) {
+      return res.status(500).json({ message: 'Error updating news category' });
+    }
+    
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'News category not found' });
+    }
+    
+    res.json({ message: 'News category updated successfully' });
+  });
+});
+
+app.delete('/api/news-categories/:id', verifyToken, (req, res) => {
+  const { id } = req.params;
+  
+  const query = 'DELETE FROM news_categories WHERE id = ?';
+  db.query(query, [id], (err, result) => {
+    if (err) {
+      return res.status(500).json({ message: 'Error deleting news category' });
+    }
+    
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'News category not found' });
+    }
+    
+    res.json({ message: 'News category deleted successfully' });
+  });
+});
+
+// News Routes
+app.get('/api/news', (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const offset = (page - 1) * limit;
+  const status = req.query.status || 'published';
+
+  const countQuery = 'SELECT COUNT(*) as total FROM news WHERE status = ?';
+  db.query(countQuery, [status], (err, countResult) => {
+    if (err) {
+      return res.status(500).json({ message: 'Error fetching news count' });
+    }
+
+    const total = countResult[0].total;
+
+    const newsQuery = `
+      SELECT n.*, nc.name as category_name 
+      FROM news n 
+      LEFT JOIN news_categories nc ON n.category_id = nc.id 
+      WHERE n.status = ? 
+      ORDER BY n.created_at DESC 
+      LIMIT ? OFFSET ?
+    `;
+    db.query(newsQuery, [status, limit, offset], (err, results) => {
+      if (err) {
+        return res.status(500).json({ message: 'Error fetching news' });
+      }
+
+      res.json({
+        news: results,
+        total,
+        currentPage: page,
+        totalPages: Math.ceil(total / limit)
+      });
+    });
+  });
+});
+
+app.get('/api/news/:slug', (req, res) => {
+  const { slug } = req.params;
+  
+  const query = `
+    SELECT n.*, nc.name as category_name 
+    FROM news n 
+    LEFT JOIN news_categories nc ON n.category_id = nc.id 
+    WHERE n.slug = ?
+  `;
+  db.query(query, [slug], (err, results) => {
+    if (err) {
+      return res.status(500).json({ message: 'Error fetching news' });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ message: 'News not found' });
+    }
+
+    res.json(results[0]);
+  });
+});
+
+app.post('/api/news', verifyToken, upload.single('image'), (req, res) => {
+  const { title, slug, description, category_id, author, status } = req.body;
+  const image = req.file ? req.file.filename : null;
+
+  // Generate slug if not provided
+  const finalSlug = slug || title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
+
+  const query = `
+    INSERT INTO news (title, slug, description, category_id, image, author, status) 
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `;
+  db.query(query, [title, finalSlug, description, category_id, image, author, status], (err, result) => {
+    if (err) {
+      return res.status(500).json({ message: 'Error creating news' });
+    }
+
+    res.status(201).json({ 
+      id: result.insertId, 
+      message: 'News created successfully' 
+    });
+  });
+});
+
+app.put('/api/news/:id', verifyToken, upload.single('image'), (req, res) => {
+  const { id } = req.params;
+  const { title, slug, description, category_id, author, status } = req.body;
+
+  if (req.file) {
+    const newImage = req.file.filename;
+    const getOldImageQuery = 'SELECT image FROM news WHERE id = ?';
+
+    db.query(getOldImageQuery, [id], (selectErr, selectResults) => {
+      if (selectErr) {
+        return res.status(500).json({ message: 'Error fetching news' });
+      }
+
+      if (selectResults.length === 0) {
+        return res.status(404).json({ message: 'News not found' });
+      }
+
+      const oldImage = selectResults[0].image;
+      const finalSlug = slug || title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
+      
+      const updateQuery = `
+        UPDATE news 
+        SET title = ?, slug = ?, description = ?, category_id = ?, image = ?, author = ?, status = ? 
+        WHERE id = ?
+      `;
+      const updateParams = [title, finalSlug, description, category_id, newImage, author, status, id];
+
+      db.query(updateQuery, updateParams, (updateErr, updateResult) => {
+        if (updateErr) {
+          return res.status(500).json({ message: 'Error updating news' });
+        }
+
+        if (updateResult.affectedRows === 0) {
+          return res.status(404).json({ message: 'News not found' });
+        }
+
+        if (oldImage && oldImage !== newImage) {
+          const oldImagePath = path.join('uploads-apotik-ghanim', oldImage);
+          fs.unlink(oldImagePath, (unlinkErr) => {
+            if (unlinkErr && unlinkErr.code !== 'ENOENT') {
+              console.error('Failed to delete old image:', unlinkErr);
+            }
+          });
+        }
+
+        res.json({ message: 'News updated successfully' });
+      });
+    });
+  } else {
+    const finalSlug = slug || title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
+    
+    const query = `
+      UPDATE news 
+      SET title = ?, slug = ?, description = ?, category_id = ?, author = ?, status = ? 
+      WHERE id = ?
+    `;
+    const params = [title, finalSlug, description, category_id, author, status, id];
+
+    db.query(query, params, (err, result) => {
+      if (err) {
+        return res.status(500).json({ message: 'Error updating news' });
+      }
+
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ message: 'News not found' });
+      }
+
+      res.json({ message: 'News updated successfully' });
+    });
+  }
+});
+
+app.delete('/api/news/:id', verifyToken, (req, res) => {
+  const { id } = req.params;
+
+  const getImageQuery = 'SELECT image FROM news WHERE id = ?';
+  db.query(getImageQuery, [id], (selectErr, selectResults) => {
+    if (selectErr) {
+      return res.status(500).json({ message: 'Error fetching news' });
+    }
+
+    if (selectResults.length === 0) {
+      return res.status(404).json({ message: 'News not found' });
+    }
+
+    const imageToDelete = selectResults[0].image;
+
+    const deleteQuery = 'DELETE FROM news WHERE id = ?';
+    db.query(deleteQuery, [id], (deleteErr, deleteResult) => {
+      if (deleteErr) {
+        return res.status(500).json({ message: 'Error deleting news' });
+      }
+
+      if (deleteResult.affectedRows === 0) {
+        return res.status(404).json({ message: 'News not found' });
+      }
+
+      if (imageToDelete) {
+        const imagePath = path.join('uploads-apotik-ghanim', imageToDelete);
+        fs.unlink(imagePath, (unlinkErr) => {
+          if (unlinkErr && unlinkErr.code !== 'ENOENT') {
+            console.error('Failed to delete news image:', unlinkErr);
+          }
+        });
+      }
+
+      res.json({ message: 'News deleted successfully' });
+    });
+  });
+});
+
+// Payment Methods Routes
+app.get('/api/payment-methods', (req, res) => {
+  const query = 'SELECT * FROM payment_methods WHERE is_active = TRUE ORDER BY display_order ASC, id ASC';
+  db.query(query, (err, results) => {
+    if (err) {
+      return res.status(500).json({ message: 'Error fetching payment methods' });
+    }
+    res.json(results);
+  });
+});
+
+app.get('/api/payment-methods/admin/all', verifyToken, (req, res) => {
+  const query = 'SELECT * FROM payment_methods ORDER BY display_order ASC, id ASC';
+  db.query(query, (err, results) => {
+    if (err) {
+      return res.status(500).json({ message: 'Error fetching payment methods' });
+    }
+    res.json(results);
+  });
+});
+
+app.post('/api/payment-methods', verifyToken, upload.single('qris_image'), (req, res) => {
+  const { type, bank_name, account_name, account_number, is_active, display_order } = req.body;
+  const qris_image = req.file ? req.file.filename : null;
+
+  if (type === 'qris' && !qris_image) {
+    return res.status(400).json({ message: 'QRIS image is required for QRIS type' });
+  }
+
+  if (type === 'bank' && (!bank_name || !account_name || !account_number)) {
+    return res.status(400).json({ message: 'Bank name, account name, and account number are required for bank type' });
+  }
+
+  const query = `
+    INSERT INTO payment_methods (type, qris_image, bank_name, account_name, account_number, is_active, display_order) 
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `;
+  
+  db.query(query, [type, qris_image, bank_name, account_name, account_number, is_active === 'true' || is_active === true ? 1 : 0, display_order || 0], (err, result) => {
+    if (err) {
+      return res.status(500).json({ message: 'Error creating payment method' });
+    }
+
+    res.status(201).json({
+      id: result.insertId,
+      message: 'Payment method created successfully'
+    });
+  });
+});
+
+app.put('/api/payment-methods/:id', verifyToken, upload.single('qris_image'), (req, res) => {
+  const { id } = req.params;
+  const { type, bank_name, account_name, account_number, is_active, display_order } = req.body;
+
+  if (type === 'bank' && (!bank_name || !account_name || !account_number)) {
+    return res.status(400).json({ message: 'Bank name, account name, and account number are required for bank type' });
+  }
+
+  if (req.file) {
+    const newImage = req.file.filename;
+    const getOldImageQuery = 'SELECT qris_image FROM payment_methods WHERE id = ?';
+
+    db.query(getOldImageQuery, [id], (selectErr, selectResults) => {
+      if (selectErr) {
+        return res.status(500).json({ message: 'Error fetching payment method' });
+      }
+
+      if (selectResults.length === 0) {
+        return res.status(404).json({ message: 'Payment method not found' });
+      }
+
+      const oldImage = selectResults[0].qris_image;
+      
+      const updateQuery = `
+        UPDATE payment_methods 
+        SET type = ?, qris_image = ?, bank_name = ?, account_name = ?, account_number = ?, is_active = ?, display_order = ? 
+        WHERE id = ?
+      `;
+      const updateParams = [type, newImage, bank_name, account_name, account_number, is_active === 'true' || is_active === true ? 1 : 0, display_order || 0, id];
+
+      db.query(updateQuery, updateParams, (updateErr, updateResult) => {
+        if (updateErr) {
+          return res.status(500).json({ message: 'Error updating payment method' });
+        }
+
+        if (updateResult.affectedRows === 0) {
+          return res.status(404).json({ message: 'Payment method not found' });
+        }
+
+        if (oldImage && oldImage !== newImage) {
+          const oldImagePath = path.join('uploads-apotik-ghanim', oldImage);
+          fs.unlink(oldImagePath, (unlinkErr) => {
+            if (unlinkErr && unlinkErr.code !== 'ENOENT') {
+              console.error('Failed to delete old image:', unlinkErr);
+            }
+          });
+        }
+
+        res.json({ message: 'Payment method updated successfully' });
+      });
+    });
+  } else {
+    const updateQuery = `
+      UPDATE payment_methods 
+      SET type = ?, bank_name = ?, account_name = ?, account_number = ?, is_active = ?, display_order = ? 
+      WHERE id = ?
+    `;
+    const updateParams = [type, bank_name, account_name, account_number, is_active === 'true' || is_active === true ? 1 : 0, display_order || 0, id];
+
+    db.query(updateQuery, updateParams, (err, result) => {
+      if (err) {
+        return res.status(500).json({ message: 'Error updating payment method' });
+      }
+
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ message: 'Payment method not found' });
+      }
+
+      res.json({ message: 'Payment method updated successfully' });
+    });
+  }
+});
+
+app.delete('/api/payment-methods/:id', verifyToken, (req, res) => {
+  const { id } = req.params;
+
+  const getImageQuery = 'SELECT qris_image FROM payment_methods WHERE id = ?';
+  db.query(getImageQuery, [id], (selectErr, selectResults) => {
+    if (selectErr) {
+      return res.status(500).json({ message: 'Error fetching payment method' });
+    }
+
+    if (selectResults.length === 0) {
+      return res.status(404).json({ message: 'Payment method not found' });
+    }
+
+    const imageToDelete = selectResults[0].qris_image;
+
+    const deleteQuery = 'DELETE FROM payment_methods WHERE id = ?';
+    db.query(deleteQuery, [id], (deleteErr, deleteResult) => {
+      if (deleteErr) {
+        return res.status(500).json({ message: 'Error deleting payment method' });
+      }
+
+      if (deleteResult.affectedRows === 0) {
+        return res.status(404).json({ message: 'Payment method not found' });
+      }
+
+      if (imageToDelete) {
+        const imagePath = path.join('uploads-apotik-ghanim', imageToDelete);
+        fs.unlink(imagePath, (unlinkErr) => {
+          if (unlinkErr && unlinkErr.code !== 'ENOENT') {
+            console.error('Failed to delete payment method image:', unlinkErr);
+          }
+        });
+      }
+
+      res.json({ message: 'Payment method deleted successfully' });
+    });
+  });
+});
+
+// Orders Routes
+app.post('/api/orders', (req, res) => {
+  const { order_id, buyer_name, buyer_address, buyer_phone, payment_method_id, items_total } = req.body;
+
+  const query = `
+    INSERT INTO orders (order_id, buyer_name, buyer_address, buyer_phone, payment_method_id, items_total) 
+    VALUES (?, ?, ?, ?, ?, ?)
+  `;
+  
+  db.query(query, [order_id, buyer_name, buyer_address, buyer_phone, payment_method_id, items_total], (err, result) => {
+    if (err) {
+      return res.status(500).json({ message: 'Error creating order' });
+    }
+
+    res.status(201).json({
+      id: result.insertId,
+      message: 'Order created successfully'
     });
   });
 });

@@ -1,16 +1,23 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 import { useCart } from '../hooks/useCart';
 import { useSettings } from '../hooks/useSettings';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import { ShoppingCart, Trash2, Minus, Plus, MessageCircle, Phone, Info, AlertCircle } from 'lucide-react';
+import CheckoutModal from '../components/CheckoutModal';
 
 const Cart = () => {
   const { cart, removeFromCart, updateCartItemQuantity, getTotalPrice, getTotalItems, clearCart } = useCart();
   const { settings } = useSettings();
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
+  const [showCheckoutModal, setShowCheckoutModal] = useState(false);
+  const [paymentMethods, setPaymentMethods] = useState([]);
+  const [loadingPaymentMethods, setLoadingPaymentMethods] = useState(false);
+
+  const API_URL = 'https://api-inventory.isavralabel.com/rn-aneka-jaya/api';
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -18,7 +25,20 @@ const Cart = () => {
       duration: 600,
       once: true,
     });
+    fetchPaymentMethods();
   }, []);
+
+  const fetchPaymentMethods = async () => {
+    try {
+      setLoadingPaymentMethods(true);
+      const response = await axios.get(`${API_URL}/payment-methods`);
+      setPaymentMethods(response.data);
+    } catch (error) {
+      console.error('Error fetching payment methods:', error);
+    } finally {
+      setLoadingPaymentMethods(false);
+    }
+  };
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat('id-ID', {
@@ -27,12 +47,17 @@ const Cart = () => {
     }).format(price);
   };
 
-  const handleCheckoutWhatsApp = () => {
+  const handleCheckoutClick = () => {
+    if (cart.length === 0) return;
+    setShowCheckoutModal(true);
+  };
+
+  const handleCheckoutSubmit = (order_id, formData) => {
     if (cart.length === 0) return;
 
     setIsCheckingOut(true);
 
-    // Build message with cart items
+    // Build message with cart items and order ID
     const cartDetails = cart
       .map(
         (item, index) =>
@@ -42,10 +67,13 @@ const Cart = () => {
 
     const totalPrice = getTotalPrice();
     const message = encodeURIComponent(
-      `Halo, saya ingin memesan:\n\n${cartDetails}\n\nTotal: ${formatPrice(totalPrice)}`
+      `*ID PESANAN:* ${order_id}\n\n*NAMA:* ${formData.buyer_name}\n*ALAMAT:* ${formData.buyer_address}\n*TELEPON:* ${formData.buyer_phone}\n\n*PESANAN:*\n${cartDetails}\n\n*TOTAL:* ${formatPrice(totalPrice)}`
     );
 
     const whatsappUrl = `https://wa.me/${settings.phone.replace(/\D/g, '').replace(/^0/, '62')}?text=${message}`;
+
+    // Close modal
+    setShowCheckoutModal(false);
 
     // Open WhatsApp
     window.open(whatsappUrl, '_blank');
@@ -225,8 +253,8 @@ const Cart = () => {
 
                 <div className="space-y-3">
                   <button
-                    onClick={handleCheckoutWhatsApp}
-                    disabled={isCheckingOut || cart.length === 0}
+                    onClick={handleCheckoutClick}
+                    disabled={isCheckingOut || cart.length === 0 || loadingPaymentMethods}
                     className="btn-primary w-full py-3 text-lg font-semibold flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <MessageCircle className="w-5 h-5" />
@@ -287,6 +315,17 @@ const Cart = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Checkout Modal */}
+      {showCheckoutModal && (
+        <CheckoutModal
+          cart={cart}
+          totalPrice={getTotalPrice()}
+          paymentMethods={paymentMethods}
+          onClose={() => setShowCheckoutModal(false)}
+          onCheckout={handleCheckoutSubmit}
+        />
       )}
     </div>
   );
