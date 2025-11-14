@@ -442,10 +442,15 @@ const PaymentMethodManagement = () => {
                 </label>
                 <input
                   type="number"
-                  value={formData.display_order}
-                  onChange={(e) => setFormData({...formData, display_order: parseInt(e.target.value) || 0})}
+                  value={formData.display_order || ''}
+                  onChange={(e) => {
+                    const value = e.target.value.trim();
+                    const parsed = value === '' ? 0 : parseInt(value, 10);
+                    setFormData({...formData, display_order: isNaN(parsed) ? 0 : parsed});
+                  }}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                   placeholder="0"
+                  min="0"
                 />
               </div>
 
