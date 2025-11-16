@@ -279,12 +279,12 @@ const Contact = () => {
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12" data-aos="fade-up">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Lokasi Gudang Kami</h2>
-            <p className="text-gray-600">Kunjungi gudang kami untuk memilih produk pakan langsung</p>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Lokasi Toko Kami</h2>
+            <p className="text-gray-600">Kunjungi toko kami untuk memilih produk pakan langsung</p>
           </div>
           <div className="rounded-2xl overflow-hidden shadow-lg" data-aos="fade-up" data-aos-delay="200">
             <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.4!2d106.8569!3d-6.1944!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f4227f4b1a6b%3A0x301576d14feb1a89!2sMatraman%2C+East+Jakarta+City%2C+Jakarta!5e0!3m2!1sen!2sid!4v1"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3961.023967795469!2d109.75028689999999!3d-6.8877324!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e7025000dc14f31%3A0xd72abebd46802906!2sMall%20Gudang%20Pakan%20Ternak!5e0!3m2!1sid!2ssg!4v1763115363633!5m2!1sid!2ssg"
               width="100%"
               height="400"
               style={{ border: 0 }}

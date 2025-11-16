@@ -9,3 +9,4 @@ COMMENT ON COLUMN settings.instagram_url IS 'Instagram profile URL';
 COMMENT ON COLUMN settings.tiktok_url IS 'TikTok profile URL';
 COMMENT ON COLUMN settings.facebook_url IS 'Facebook profile URL';
 
+
