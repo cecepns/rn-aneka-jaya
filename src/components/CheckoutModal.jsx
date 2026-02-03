@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { X, Loader, AlertCircle } from 'lucide-react';
 
+const BASE_URL = 'https://api-inventory.isavralabel.com/rn-aneka-jaya';
+
 const CheckoutModal = ({ cart, totalPrice, paymentMethods, onClose, onCheckout }) => {
   const [formData, setFormData] = useState({
     buyer_name: '',
@@ -218,7 +220,7 @@ const CheckoutModal = ({ cart, totalPrice, paymentMethods, onClose, onCheckout }
                 <div>
                   {selectedPaymentMethod.qris_image && (
                     <img
-                      src={`https://api-inventory.isavralabel.com/rn-aneka-jaya/api/uploads/${selectedPaymentMethod.qris_image}`}
+                      src={`${BASE_URL}/uploads/${selectedPaymentMethod.qris_image}`}
                       alt="QRIS"
                       className="w-48 h-48 object-contain"
                     />
