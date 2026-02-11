@@ -122,13 +122,13 @@ const Products = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-primary-50 to-primary-100 py-12 sm:py-16 lg:py-20 mt-16">
+      <section className="bg-gradient-to-br from-primary-50 to-primary-100 py-12 sm:py-16 lg:py-20 mt-24 md:t-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-gray-900 mb-3 sm:mb-4 lg:mb-6" data-aos="fade-up">
+            <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4" data-aos="fade-up">
               Katalog Produk
             </h1>
-            <p className="text-sm sm:text-base lg:text-lg xl:text-xl text-gray-600 max-w-3xl mx-auto mb-6 sm:mb-8 line-clamp-3 sm:line-clamp-2" data-aos="fade-up" data-aos-delay="200">
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-4" data-aos="fade-up" data-aos-delay="200">
               Temukan berbagai macam pakan ternak dan ikan berkualitas dengan harga kompetitif
             </p>
             
