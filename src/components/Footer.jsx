@@ -13,11 +13,11 @@ const Footer = () => {
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center space-x-2 mb-4">
               <span className="text-xl font-bold">
-                Gudang Pakan RN Aneka Jaya
+                Mall Gudang Pakan Ternak
               </span>
             </div>
             <p className="text-gray-300 mb-4 max-w-md">
-              Gudang Pakan RN Aneka Jaya adalah toko yang menyediakan berbagai
+              Mall Gudang Pakan Ternak adalah toko yang menyediakan berbagai
               jenis pakan ternak dan ikan berkualitas untuk memenuhi kebutuhan
               peternak dan penghobi. Kami melayani penjualan pakan ayam, pakan
               bebek, pakan ikan lele, nila, gurame, koi, dan berbagai jenis
@@ -134,7 +134,7 @@ const Footer = () => {
 
         <div className="border-t border-gray-800 mt-8 pt-8 text-center">
           <p className="text-gray-400 text-sm">
-            © 2025 Gudang Pakan RN Aneka Jaya. Semua hak cipta dilindungi
+            © 2025 Mall Gudang Pakan Ternak. Semua hak cipta dilindungi
             undang-undang.
           </p>
         </div>

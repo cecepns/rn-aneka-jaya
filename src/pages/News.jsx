@@ -69,7 +69,7 @@ const News = () => {
               Berita & Informasi
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Dapatkan informasi terbaru tentang produk dan tips peternakan dari Gudang Pakan RN Aneka Jaya
+              Dapatkan informasi terbaru tentang produk dan tips peternakan dari Mall Gudang Pakan Ternak
             </p>
           </div>
         </div>

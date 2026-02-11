@@ -50,7 +50,7 @@ const Contact = () => {
 
       // Convert phone number to WhatsApp format (remove + and other characters, ensure 62 prefix)
       const phoneForWhatsApp = settings.phone.replace(/\D/g, '').replace(/^0/, '62');
-      const message = `Halo Gudang Pakan RN Aneka Jaya,\n\n` +
+      const message = `Halo Mall Gudang Pakan Ternak,\n\n` +
         `Nama: ${formData.name}\n` +
         `No. Telepon: ${formData.phone}\n` +
         `Email: ${formData.email || '-'}\n` +
@@ -84,7 +84,7 @@ const Contact = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6" data-aos="fade-up">
-              Hubungi Gudang Pakan RN Aneka Jaya
+              Hubungi Mall Gudang Pakan Ternak
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto" data-aos="fade-up" data-aos-delay="200">
               Kami siap membantu Anda dengan pertanyaan tentang produk pakan, konsultasi nutrisi ternak, atau kebutuhan peternakan lainnya

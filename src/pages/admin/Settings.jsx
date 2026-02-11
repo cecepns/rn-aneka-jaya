@@ -46,7 +46,7 @@ const Settings = () => {
         phone: '085243008899',
         maps_url: 'https://maps.app.goo.gl/nwkqSVyAXtdTC37HA',
         operating_hours: 'Setiap Hari: 07.00 - 21.00 WIT',
-        about_us: 'Gudang Pakan RN Aneka Jaya adalah supplier pakan ternak dan ikan berkualitas terpercaya.',
+        about_us: 'Mall Gudang Pakan Ternak adalah supplier pakan ternak dan ikan berkualitas terpercaya.',
         instagram_url: '',
         tiktok_url: '',
         facebook_url: '',

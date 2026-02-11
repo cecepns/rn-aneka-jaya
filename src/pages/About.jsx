@@ -58,7 +58,7 @@ const About = () => {
               Tentang Kami
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto" data-aos="fade-up" data-aos-delay="200">
-              Mengenal lebih dekat Gudang Pakan RN Aneka Jaya, supplier pakan ternak dan ikan berkualitas terpercaya
+              Mengenal lebih dekat Mall Gudang Pakan Ternak, supplier pakan ternak dan ikan berkualitas terpercaya
             </p>
           </div>
         </div>
@@ -71,7 +71,7 @@ const About = () => {
             <div data-aos="fade-right">
               <img 
                 src={Logo}
-                alt="Gudang Pakan RN Aneka Jaya"
+                alt="Mall Gudang Pakan Ternak"
                 className="rounded-2xl shadow-lg w-full h-auto"
               />
             </div>
@@ -81,13 +81,13 @@ const About = () => {
               </h2>
               <div className="space-y-4 text-gray-600 text-lg leading-relaxed">
                 <p>
-                  Gudang Pakan RN Aneka Jaya didirikan dengan visi untuk menjadi supplier pakan ternak dan ikan terpercaya yang dapat diandalkan oleh peternak dan penghobi di seluruh wilayah. Berawal dari keinginan untuk memberikan akses produk pakan berkualitas tinggi dengan harga yang kompetitif.
+                  Mall Gudang Pakan Ternak didirikan dengan visi untuk menjadi supplier pakan ternak dan ikan terpercaya yang dapat diandalkan oleh peternak dan penghobi di seluruh wilayah. Berawal dari keinginan untuk memberikan akses produk pakan berkualitas tinggi dengan harga yang kompetitif.
                 </p>
                 <p>
                   Kami telah melayani ribuan peternak dengan sepenuh hati, menyediakan berbagai macam pakan berkualitas mulai dari pakan ayam, bebek, ikan lele, nila, gurame, koi, hingga berbagai jenis pakan unggas dan ikan lainnya. Selain itu, kami juga menyediakan vitamin, suplemen ternak, dan perlengkapan peternakan untuk mendukung pertumbuhan hewan peliharaan Anda secara optimal.
                 </p>
                 <p>
-                  Saat ini, Gudang Pakan RN Aneka Jaya terus berinovasi dengan menghadirkan produk-produk terbaru dan layanan yang lebih baik untuk memenuhi kebutuhan peternak modern, tanpa melupakan komitmen kami terhadap kualitas dan kepercayaan yang menjadi ciri khas kami.
+                  Saat ini, Mall Gudang Pakan Ternak terus berinovasi dengan menghadirkan produk-produk terbaru dan layanan yang lebih baik untuk memenuhi kebutuhan peternak modern, tanpa melupakan komitmen kami terhadap kualitas dan kepercayaan yang menjadi ciri khas kami.
                 </p>
               </div>
             </div>

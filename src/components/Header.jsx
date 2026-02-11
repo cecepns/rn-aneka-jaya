@@ -46,7 +46,7 @@ const Header = () => {
             <Link to="/" className="flex items-center space-x-2">
               <img 
                 src={settings?.logo_image || '/logo.webp'} 
-                alt="Gudang Pakan RN Aneka Jaya" 
+                alt="Mall Gudang Pakan Ternak" 
                 className="w-20 h-auto rounded" 
               />
             </Link>

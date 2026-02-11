@@ -122,7 +122,7 @@ const Home = () => {
               <div className="w-full h-full">
                 <img
                   src={bannerImage || 'https://placehold.co/600x400'}
-                  alt="Gudang Pakan RN Aneka Jaya"
+                  alt="Mall Gudang Pakan Ternak"
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -136,7 +136,7 @@ const Home = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16" data-aos="fade-up">
             <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-              Mengapa Memilih Gudang Pakan RN Aneka Jaya?
+              Mengapa Memilih Mall Gudang Pakan Ternak?
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Kami berkomitmen memberikan solusi terbaik untuk peternakan Anda dengan

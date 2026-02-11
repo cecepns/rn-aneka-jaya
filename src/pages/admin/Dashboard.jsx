@@ -58,7 +58,7 @@ const Dashboard = () => {
         {/* Welcome Section */}
         <div className="mb-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Selamat Datang, Admin!</h2>
-          <p className="text-gray-600">Kelola sistem Gudang Pakan RN Aneka Jaya dengan mudah dari dashboard ini</p>
+          <p className="text-gray-600">Kelola sistem Mall Gudang Pakan Ternak dengan mudah dari dashboard ini</p>
         </div>
 
         {/* Stats Cards */}

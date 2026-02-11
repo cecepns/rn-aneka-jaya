@@ -40,7 +40,7 @@ const Login = () => {
           Admin Login
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600">
-          Masuk ke dashboard admin Gudang Pakan RN Aneka Jaya
+          Masuk ke dashboard admin Mall Gudang Pakan Ternak
         </p>
       </div>
 

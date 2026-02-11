@@ -98,7 +98,7 @@ const Cart = () => {
             <ShoppingCart className="w-16 h-16 text-gray-400 mx-auto mb-4" />
             <h1 className="text-3xl font-bold text-gray-900 mb-4">Keranjang Kosong</h1>
             <p className="text-gray-600 mb-8 max-w-md mx-auto">
-              Belum ada produk di keranjang Anda. Yuk, cari produk pakan berkualitas dari Gudang Pakan RN Aneka Jaya
+              Belum ada produk di keranjang Anda. Yuk, cari produk pakan berkualitas dari Mall Gudang Pakan Ternak
             </p>
             <Link to="/products" className="btn-primary inline-flex items-center px-8 py-4 text-lg">
               Lanjutkan Belanja
