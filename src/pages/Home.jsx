@@ -5,7 +5,6 @@ import "aos/dist/aos.css";
 import { apiEndpoints } from "../utils/api";
 import { useSettings } from "../hooks/useSettings";
 import { useCart } from "../hooks/useCart";
-import Banner from "../assets/banner.png";
 import { ShoppingBag, Package, Clock, Truck, MapPin, Phone, ShoppingCart, Check } from 'lucide-react';
 
 const Home = () => {
@@ -14,12 +13,20 @@ const Home = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [addedToCartIds, setAddedToCartIds] = useState(new Set());
+  const [bannerImage, setBannerImage] = useState(null);
 
   useEffect(() => {
     // Scroll to top when component mounts
     window.scrollTo(0, 0);
     fetchProducts();
   }, []);
+
+  useEffect(() => {
+    // Set banner image when settings are loaded
+    if (settings?.banner_image) {
+      setBannerImage(settings.banner_image);
+    }
+  }, [settings]);
 
   const fetchProducts = async () => {
     try {
@@ -91,14 +98,10 @@ const Home = () => {
           <div className="flex flex-col-reverse lg:flex-row gap-12 items-center">
             <div data-aos="fade-right" className="flex-1">
               <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 mb-6">
-                Selamat Datang di
-                <span className="text-primary-600 block">Gudang Pakan</span>
-                <span className="text-primary-600 block">RN Aneka Jaya</span>
+                <span dangerouslySetInnerHTML={{ __html: settings?.hero_title || 'Selamat Datang di<br/>Gudang Pakan<br/>RN Aneka Jaya' }} />
               </h1>
               <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-                Supplier pakan ternak dan ikan berkualitas terpercaya yang menyediakan berbagai
-                macam pakan unggas, ikan, suplemen, dan perlengkapan peternakan dengan harga kompetitif
-                untuk mendukung produktivitas peternakan Anda.
+                {settings?.hero_description || 'Supplier pakan ternak dan ikan berkualitas terpercaya yang menyediakan berbagai macam pakan unggas, ikan, suplemen, dan perlengkapan peternakan dengan harga kompetitif untuk mendukung produktivitas peternakan Anda.'}
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link
@@ -118,7 +121,7 @@ const Home = () => {
             <div data-aos="fade-left" className="flex-1">
               <div className="w-full h-full">
                 <img
-                  src={Banner}
+                  src={bannerImage || 'https://placehold.co/600x400'}
                   alt="Gudang Pakan RN Aneka Jaya"
                   className="w-full h-full object-cover"
                 />

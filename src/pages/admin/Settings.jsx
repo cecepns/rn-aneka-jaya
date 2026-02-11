@@ -13,10 +13,16 @@ const Settings = () => {
     about_us: '',
     instagram_url: '',
     tiktok_url: '',
-    facebook_url: ''
+    facebook_url: '',
+    hero_title: '',
+    hero_description: '',
+    banner_image: null,
+    logo_image: null
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [bannerPreview, setBannerPreview] = useState(null);
+  const [logoPreview, setLogoPreview] = useState(null);
 
   useEffect(() => {
     fetchSettings();
@@ -26,6 +32,12 @@ const Settings = () => {
     try {
       const response = await apiEndpoints.getSettings();
       setSettings(response.data);
+      if (response.data.banner_image) {
+        setBannerPreview(response.data.banner_image);
+      }
+      if (response.data.logo_image) {
+        setLogoPreview(response.data.logo_image);
+      }
     } catch (error) {
       console.error('Error fetching settings:', error);
       // Set default values if no settings exist
@@ -34,10 +46,14 @@ const Settings = () => {
         phone: '085243008899',
         maps_url: 'https://maps.app.goo.gl/nwkqSVyAXtdTC37HA',
         operating_hours: 'Setiap Hari: 07.00 - 21.00 WIT',
-        about_us: 'Gudang Pakan RN Aneka Jaya adalah toko sembako terpercaya yang menyediakan berbagai macam kebutuhan sehari-hari berkualitas dengan harga terjangkau untuk keluarga Indonesia.',
+        about_us: 'Gudang Pakan RN Aneka Jaya adalah supplier pakan ternak dan ikan berkualitas terpercaya.',
         instagram_url: '',
         tiktok_url: '',
-        facebook_url: ''
+        facebook_url: '',
+        hero_title: 'Selamat Datang di<br/>Gudang Pakan<br/>RN Aneka Jaya',
+        hero_description: 'Supplier pakan berkualitas terpercaya',
+        banner_image: null,
+        logo_image: null
       });
     } finally {
       setLoading(false);
@@ -45,17 +61,70 @@ const Settings = () => {
   };
 
   const handleChange = (e) => {
+    const { name, value } = e.target;
     setSettings({
       ...settings,
-      [e.target.name]: e.target.value
+      [name]: value
     });
+  };
+
+  const handleBannerChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSettings({
+        ...settings,
+        banner_image: file
+      });
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setBannerPreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleLogoChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSettings({
+        ...settings,
+        logo_image: file
+      });
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setLogoPreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       setSaving(true);
-      await apiEndpoints.updateSettings(settings);
+      const formData = new FormData();
+      
+      // Add text fields
+      formData.append('address', settings.address);
+      formData.append('phone', settings.phone);
+      formData.append('maps_url', settings.maps_url);
+      formData.append('operating_hours', settings.operating_hours);
+      formData.append('about_us', settings.about_us);
+      formData.append('instagram_url', settings.instagram_url);
+      formData.append('tiktok_url', settings.tiktok_url);
+      formData.append('facebook_url', settings.facebook_url);
+      formData.append('hero_title', settings.hero_title);
+      formData.append('hero_description', settings.hero_description);
+      
+      // Add image files if they exist
+      if (settings.banner_image instanceof File) {
+        formData.append('banner_image', settings.banner_image);
+      }
+      if (settings.logo_image instanceof File) {
+        formData.append('logo_image', settings.logo_image);
+      }
+
+      await apiEndpoints.updateSettings(formData);
       alert('Pengaturan berhasil disimpan!');
     } catch (error) {
       console.error('Error saving settings:', error);
@@ -187,6 +256,96 @@ const Settings = () => {
               <p className="text-sm text-gray-500 mt-1">
                 Deskripsi singkat tentang toko yang akan ditampilkan di website
               </p>
+            </div>
+
+            {/* Hero Section */}
+            <div className="border-t pt-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Halaman Beranda (Hero)</h3>
+              
+              <div>
+                <label htmlFor="hero_title" className="block text-sm font-medium text-gray-700 mb-2">
+                  Judul Hero
+                </label>
+                <textarea
+                  id="hero_title"
+                  name="hero_title"
+                  rows="3"
+                  className="input-field"
+                  value={settings.hero_title}
+                  onChange={handleChange}
+                  placeholder="Masukkan judul hero (gunakan &lt;br/&gt; untuk baris baru)"
+                />
+                <p className="text-sm text-gray-500 mt-1">
+                  Gunakan &lt;br/&gt; untuk membuat baris baru
+                </p>
+              </div>
+
+              <div className="mt-4">
+                <label htmlFor="hero_description" className="block text-sm font-medium text-gray-700 mb-2">
+                  Deskripsi Hero
+                </label>
+                <textarea
+                  id="hero_description"
+                  name="hero_description"
+                  rows="3"
+                  className="input-field"
+                  value={settings.hero_description}
+                  onChange={handleChange}
+                  placeholder="Masukkan deskripsi hero"
+                />
+              </div>
+
+              <div className="mt-4">
+                <label htmlFor="banner_image" className="block text-sm font-medium text-gray-700 mb-2">
+                  Banner Image
+                </label>
+                <input
+                  type="file"
+                  id="banner_image"
+                  accept="image/*"
+                  onChange={handleBannerChange}
+                  className="input-field"
+                />
+                <p className="text-sm text-gray-500 mt-1">
+                  Upload gambar banner untuk hero section
+                </p>
+                {bannerPreview && (
+                  <div className="mt-3">
+                    <p className="text-sm text-gray-600 mb-2">Preview:</p>
+                    <img 
+                      src={bannerPreview} 
+                      alt="Banner Preview" 
+                      className="max-w-xs h-auto rounded-lg border border-gray-300"
+                    />
+                  </div>
+                )}
+              </div>
+
+              <div className="mt-4">
+                <label htmlFor="logo_image" className="block text-sm font-medium text-gray-700 mb-2">
+                  Logo
+                </label>
+                <input
+                  type="file"
+                  id="logo_image"
+                  accept="image/*"
+                  onChange={handleLogoChange}
+                  className="input-field"
+                />
+                <p className="text-sm text-gray-500 mt-1">
+                  Upload logo toko Anda
+                </p>
+                {logoPreview && (
+                  <div className="mt-3">
+                    <p className="text-sm text-gray-600 mb-2">Preview:</p>
+                    <img 
+                      src={logoPreview} 
+                      alt="Logo Preview" 
+                      className="w-20 h-20 object-contain rounded-lg border border-gray-300"
+                    />
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Social Media Section */}

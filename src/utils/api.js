@@ -22,7 +22,13 @@ api.interceptors.request.use((config) => {
 // API endpoints
 export const apiEndpoints = {
   // Products
-  getProducts: (page = 1, limit = 10) => api.get(`/products?page=${page}&limit=${limit}`),
+  getProducts: (page = 1, limit = 10, category = null) => {
+    let query = `/products?page=${page}&limit=${limit}`;
+    if (category) {
+      query += `&category=${encodeURIComponent(category)}`;
+    }
+    return api.get(query);
+  },
   getProduct: (id) => api.get(`/products/${id}`),
   createProduct: (data) => api.post('/products', data, {
     headers: { 'Content-Type': 'multipart/form-data' }
@@ -43,7 +49,9 @@ export const apiEndpoints = {
   
   // Settings
   getSettings: () => api.get('/settings'),
-  updateSettings: (data) => api.put('/settings', data),
+  updateSettings: (data) => api.put('/settings', data, {
+    headers: data instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : { 'Content-Type': 'application/json' }
+  }),
   
   // Contact
   sendMessage: (data) => api.post('/contact', data),

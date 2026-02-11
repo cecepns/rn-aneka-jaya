@@ -94,19 +94,31 @@ app.get('/api/products', (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
   const offset = (page - 1) * limit;
+  const category = req.query.category || null;
+
+  // Build WHERE clause based on filters
+  let whereClause = '';
+  let queryParams = [];
+  
+  if (category) {
+    whereClause = 'WHERE category = ?';
+    queryParams.push(category);
+  }
 
   // Get total count
-  const countQuery = 'SELECT COUNT(*) as total FROM products';
-  db.query(countQuery, (err, countResult) => {
+  const countQuery = `SELECT COUNT(*) as total FROM products ${whereClause}`;
+  db.query(countQuery, queryParams, (err, countResult) => {
     if (err) {
       return res.status(500).json({ message: 'Error fetching product count' });
     }
 
     const total = countResult[0].total;
 
-    // Get products with pagination
-    const productsQuery = 'SELECT * FROM products ORDER BY created_at DESC LIMIT ? OFFSET ?';
-    db.query(productsQuery, [limit, offset], (err, results) => {
+    // Get products with pagination and category filter
+    const productsQuery = `SELECT * FROM products ${whereClause} ORDER BY created_at DESC LIMIT ? OFFSET ?`;
+    const productsParams = [...queryParams, limit, offset];
+    
+    db.query(productsQuery, productsParams, (err, results) => {
       if (err) {
         return res.status(500).json({ message: 'Error fetching products' });
       }
@@ -292,19 +304,37 @@ app.get('/api/settings', (req, res) => {
         about_us: 'Gudang Pakan RN Aneka Jaya adalah supplier pakan ternak dan ikan berkualitas terpercaya yang menyediakan berbagai macam pakan unggas, ikan, suplemen, dan perlengkapan peternakan dengan harga kompetitif.',
         instagram_url: '',
         tiktok_url: '',
-        facebook_url: ''
+        facebook_url: '',
+        hero_title: 'Selamat Datang di<br/>Gudang Pakan<br/>RN Aneka Jaya',
+        hero_description: 'Supplier pakan ternak dan ikan berkualitas terpercaya yang menyediakan berbagai macam pakan unggas, ikan, suplemen, dan perlengkapan peternakan dengan harga kompetitif untuk mendukung produktivitas peternakan Anda.',
+        banner_image: null,
+        logo_image: null
       });
+    }
+
+    // Map banner_image to full URL if exists
+    if (results[0].banner_image) {
+      results[0].banner_image = `https://api-inventory.isavralabel.com/rn-aneka-jaya/uploads/${results[0].banner_image}`;
+    }
+    if (results[0].logo_image) {
+      results[0].logo_image = `https://api-inventory.isavralabel.com/rn-aneka-jaya/uploads/${results[0].logo_image}`;
     }
 
     res.json(results[0]);
   });
 });
 
-app.put('/api/settings', verifyToken, (req, res) => {
-  const { address, phone, maps_url, operating_hours, about_us, instagram_url, tiktok_url, facebook_url } = req.body;
+app.put('/api/settings', verifyToken, upload.fields([
+  { name: 'banner_image', maxCount: 1 },
+  { name: 'logo_image', maxCount: 1 }
+]), (req, res) => {
+  const { address, phone, maps_url, operating_hours, about_us, instagram_url, tiktok_url, facebook_url, hero_title, hero_description } = req.body;
+  
+  const bannerImage = req.files?.banner_image?.[0]?.filename || null;
+  const logoImage = req.files?.logo_image?.[0]?.filename || null;
 
   // Check if settings exist
-  const checkQuery = 'SELECT id FROM settings ORDER BY id DESC LIMIT 1';
+  const checkQuery = 'SELECT id, banner_image, logo_image FROM settings ORDER BY id DESC LIMIT 1';
   db.query(checkQuery, (err, results) => {
     if (err) {
       return res.status(500).json({ message: 'Error checking settings' });
@@ -312,8 +342,8 @@ app.put('/api/settings', verifyToken, (req, res) => {
 
     if (results.length === 0) {
       // Insert new settings
-      const insertQuery = 'INSERT INTO settings (address, phone, maps_url, operating_hours, about_us, instagram_url, tiktok_url, facebook_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
-      db.query(insertQuery, [address, phone, maps_url, operating_hours, about_us, instagram_url, tiktok_url, facebook_url], (err, result) => {
+      const insertQuery = 'INSERT INTO settings (address, phone, maps_url, operating_hours, about_us, instagram_url, tiktok_url, facebook_url, hero_title, hero_description, banner_image, logo_image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+      db.query(insertQuery, [address, phone, maps_url, operating_hours, about_us, instagram_url, tiktok_url, facebook_url, hero_title, hero_description, bannerImage, logoImage], (err, result) => {
         if (err) {
           return res.status(500).json({ message: 'Error creating settings' });
         }
@@ -321,11 +351,34 @@ app.put('/api/settings', verifyToken, (req, res) => {
       });
     } else {
       // Update existing settings
-      const updateQuery = 'UPDATE settings SET address = ?, phone = ?, maps_url = ?, operating_hours = ?, about_us = ?, instagram_url = ?, tiktok_url = ?, facebook_url = ? WHERE id = ?';
-      db.query(updateQuery, [address, phone, maps_url, operating_hours, about_us, instagram_url, tiktok_url, facebook_url, results[0].id], (err, result) => {
+      const oldBannerImage = results[0].banner_image;
+      const oldLogoImage = results[0].logo_image;
+
+      const updateQuery = 'UPDATE settings SET address = ?, phone = ?, maps_url = ?, operating_hours = ?, about_us = ?, instagram_url = ?, tiktok_url = ?, facebook_url = ?, hero_title = ?, hero_description = ?, banner_image = COALESCE(?, banner_image), logo_image = COALESCE(?, logo_image) WHERE id = ?';
+      db.query(updateQuery, [address, phone, maps_url, operating_hours, about_us, instagram_url, tiktok_url, facebook_url, hero_title, hero_description, bannerImage, logoImage, results[0].id], (err, result) => {
         if (err) {
           return res.status(500).json({ message: 'Error updating settings' });
         }
+
+        // Delete old images if new ones were uploaded
+        if (bannerImage && oldBannerImage && oldBannerImage !== bannerImage) {
+          const oldBannerPath = path.join('uploads-apotik-ghanim', oldBannerImage);
+          fs.unlink(oldBannerPath, (unlinkErr) => {
+            if (unlinkErr && unlinkErr.code !== 'ENOENT') {
+              console.error('Failed to delete old banner:', unlinkErr);
+            }
+          });
+        }
+
+        if (logoImage && oldLogoImage && oldLogoImage !== logoImage) {
+          const oldLogoPath = path.join('uploads-apotik-ghanim', oldLogoImage);
+          fs.unlink(oldLogoPath, (unlinkErr) => {
+            if (unlinkErr && unlinkErr.code !== 'ENOENT') {
+              console.error('Failed to delete old logo:', unlinkErr);
+            }
+          });
+        }
+
         res.json({ message: 'Settings updated successfully' });
       });
     }
